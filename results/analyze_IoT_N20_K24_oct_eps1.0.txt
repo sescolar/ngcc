@@ -1,0 +1,72 @@
+start parsing 68 lines:
+--------------------
+24 20
+160 2000 1800 1840
+100
+[1, 22, 33, 43, 53, 63, 73, 84, 94, 104, 114, 124, 135, 145, 155, 165, 175, 186, 196, 206]
+[1, 11, 17, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 85, 91, 96, 100]
+[]
+--------------------
+iteration: 0, E = [  0   0   0   0   0   0   0   0  19 110 224 285 335 350 331 283 134  20  18   8   0   0   0   0]
+quality input IoT    =	  1024 	  97.62
+quality python exact      =  1049
+S input IoT	= [11 11 11 11 11 11 11 11 11 11 10 10 10 10 10 10 10  4  3  3  3  3  3  3]
+S python exact	= [ 3  3  3  3  3  3  3  3 10 19 19 19 19 19 19 19 14  3  3  3  3  3  3  3]
+Time input IoT    =  2852
+iteration: 1, E = [  0   0   0   0   0   0   0   0  12 129 215 287 355 290 331 192 134  23  18   5   0   0   0   0]
+quality input IoT    =	  969 	  97.98
+quality python exact      =  989
+S input IoT	= [10 10 10 10 10 10 10 10 10 10 10 10 10 10 10  9  9  4  3  3  3  3  3  3]
+S python exact	= [ 3  3  3  3  3  3  3  3 12 16 16 16 16 19 19 19 12  3  3  3  3  3  3  3]
+Time input IoT    =  2827
+iteration: 2, E = [  0   0   0   0   0   0   0   0  22 111 224 176 335 339 331 251 138  20  15   8   0   0   0   0]
+quality input IoT    =	  959 	  97.96
+quality python exact      =  979
+S input IoT	= [10 10 10 10 10 10 10 10 10 10 10 10 10  9  9  9  9  4  3  3  3  3  3  3]
+S python exact	= [ 3  3  3  3  3  3  3  3 16 16 16 16 16 16 16 19 12  3  3  3  3  3  3  3]
+Time input IoT    =  2840
+iteration: 3, E = [  0   0   0   0   0   0   0   0  20  88 257 285 341 392 297 251 128  20  13   5   0   0   0   0]
+quality input IoT    =	  1015 	  97.60
+quality python exact      =  1040
+S input IoT	= [11 11 11 11 11 11 11 11 11 10 10 10 10 10 10 10 10  3  3  3  3  3  3  3]
+S python exact	= [ 3  3  3  3  3  3  3  3 19 19 19 19 19 19 19 19  3  3  3  3  3  3  3  3]
+Time input IoT    =  2840
+iteration: 4, E = [  0   0   0   0   0   0   0   0  22  67 259 285 375 350 261 288 139  22  13   8   0   0   0   0]
+quality input IoT    =	  1014 	  97.88
+quality python exact      =  1036
+S input IoT	= [11 11 11 11 11 11 11 11 10 10 10 10 10 10 10 10 10  4  3  3  3  3  3  3]
+S python exact	= [ 1  3  3  3  3  3 12 12 16 16 16 16 16 16 16 16 12  3  3  3  3  3  3  3]
+Time input IoT    =  2843
+iteration: 5, E = [  0   0   0   0   0   0   0   0  16 110 224 285 298 409 331 200 143  20  18   7   0   0   0   0]
+quality input IoT    =	  999 	  97.65
+quality python exact      =  1023
+S input IoT	= [11 11 11 11 11 10 10 10 10 10 10 10 10 10 10 10 10  4  3  3  3  3  3  3]
+S python exact	= [ 3  3  3  3  3  3  3 12 16 16 16 16 16 16 16 16 15  3  3  3  3  3  3  3]
+Time input IoT    =  2840
+iteration: 6, E = [  0   0   0   0   0   0   0   0  19 110 217 285 201 399 337 308 150  20  19   8   0   0   0   0]
+quality input IoT    =	  1004 	  97.57
+quality python exact      =  1029
+S input IoT	= [11 11 11 11 11 11 10 10 10 10 10 10 10 10 10 10 10  4  3  3  3  3  3  3]
+S python exact	= [ 3  3  3  3  3  3  3  3 16 16 16 16 16 19 19 19 16  3  3  3  3  3  3  3]
+Time input IoT    =  2859
+iteration: 7, E = [  0   0   0   0   0   0   0   0  19 110 215 285 351 248 331 283  83  13  18   7   0   0   0   0]
+quality input IoT    =	  955 	  97.95
+quality python exact      =  975
+S input IoT	= [10 10 10 10 10 10 10 10 10 10 10 10 10 10  9  9  8  3  3  3  3  3  3  3]
+S python exact	= [ 3  3  3  3  3  3  3  3  3 18 19 19 19 19 19 19  7  3  3  3  3  3  3  3]
+Time input IoT    =  2824
+iteration: 8, E = [  0   0   0   0   0   0   0   0  19  85 224 267 314 322 331 257 142  20  19   8   0   0   0   0]
+quality input IoT    =	  974 	  97.79
+quality python exact      =  996
+S input IoT	= [11 11 11 11 10 10 10 10 10 10 10 10 10 10 10  9  7  4  3  3  3  3  3  3]
+S python exact	= [ 1  1  1  3  3  3  3 16 16 16 16 16 19 19 19 19  3  3  3  3  3  3  3  3]
+Time input IoT    =  2842
+iteration: 9, E = [  0   0   0   0   0   0   0   0  19 102 224 233 268 304 377 263 123  22  18   6   0   0   0   0]
+quality input IoT    =	  954 	  98.05
+quality python exact      =  973
+S input IoT	= [10 10 10 10 10 10 10 10 10 10 10 10  9  9  9  9  9  4  3  3  3  3  3  3]
+S python exact	= [ 1  3  3  3  3  3  3  3 12 16 16 16 16 19 19 19 12  3  3  3  3  3  3  3]
+Time input IoT    =  2839
+Quality IoT (min,max,avg): 97.570, 98.047, 97.804
+Quality Carfagna (min,max,avg): 3975.000, 4266.667, 4111.250
+Time (min,max,avg): 2824.000, 2859.000, 2840.600
