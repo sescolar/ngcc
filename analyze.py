@@ -51,24 +51,12 @@ def parse_input(lines):
         exec("\n".join(lines[i:j]),globals(),ldict)
         iterations.append({ 'it': ldict['it'], 
                        'Energy': ldict['Energy'], 
-                       'Q': ldict['Q'], 
                        'E': np.array(ldict['E']), 
+                       'Q': ldict['Q'], 
                        'S': np.array(ldict['S']),
 		       'Time': np.array(ldict['Time']) })
         i = j
     return i,com,iterations
-
-def check(E,S,Bstart,Bmin,Bmax,Cost,Quality):
-    k = len(S)
-    battery = Bstart
-    q = 0
-    for i in range(k):
-        battery = min(battery-Cost[S[i]-1]+E[i],Bmax)
-        q += Quality[S[i]-1]
-        if battery < Bmin: print("bmin violated:",battery)
-    if battery < Bstart:
-        print("Not Energy Neutral:", battery)
-
 
 def compute_jumps(qiot,jumps,S,Q):
     num=0
@@ -81,18 +69,24 @@ def compute_jumps(qiot,jumps,S,Q):
     qiot.append(q)
 
 if __name__ == "__main__":
-    K,N,BMIN,BMAX,BINIT,BSAMPLING,MAX_QUALITY_LVL = [0]*7
+    if (len(sys.argv)) !=3:
+        print("analyze [serialdump] [0=iot|1=stabilization]")
+        sys.exit()
+
+    if sys.argv[2] == 0:
+        K,N,BMIN,BMAX,BINIT,BSAMPLING,MAX_QUALITY_LVL = [0]*7
+    else:
+        K,N,BMIN,BMAX,BINIT,BSAMPLING,MAX_QUALITY_LVL,EPSILON = [0]*8
+
     c_i = []
     q_i = []
     l_i = []
     e_i = []
     it: int = 0
     Energy, Q, Time, E, S = 0,0,0,[],[]
-    
-    if len(sys.argv) == 1:
-        print("analyze [serialdump]")
-        sys.exit()
-#   option = int(sys.argv[2]) if len(sys.argv) == 3 else 0
+    execution_time = []
+    jumps = []
+    qiot = []
     
     # read input
     f = open(sys.argv[1],encoding="utf8")
@@ -104,24 +98,16 @@ if __name__ == "__main__":
     print(K,N)
     print(BMIN,BMAX,BINIT,BSAMPLING)
     print(MAX_QUALITY_LVL)
+    if sys.argv[2] == "1":
+        print(EPSILON)
     print(c_i)
     print(q_i)
     print(l_i)
     Tasks = []
-    if len(l_i) == 0:
-        l_i = [0]*K
-        alg_input = "IoT"
-    else:
-        alg_input = "Carfagna"
     for x in zip(c_i, q_i, l_i):
         Tasks.append(Task(*x))
     print("-"*20)
     
-    opt_ratio1 = []
-    opt_ratio2 = []
-    execution_time1 = []
-    jumps = []
-    qiot = []
     #-- start analysis
     for data in iterations:
         it = data['it']
@@ -132,57 +118,14 @@ if __name__ == "__main__":
 	#added
         Time = data['Time']
         print(f"iteration: {it}, E = {E}")
-        (s1,quality1) = iot_schedule_exact(K,BINIT,BMIN,BMAX,E,Tasks)
-        (s2,quality2) = carfagna_schedule(K,BINIT,BMIN,BMAX,MAX_QUALITY_LVL,E,Tasks)
-        
-        #-- compute averages
-        opt_ratio1.append(100*Q/quality1)
-        opt_ratio2.append(100*Q/quality2)
-        execution_time1.append(Time)
-
-        print(f"quality input {alg_input}    =\t  {Q} \t {Q/quality1*100: .2f}")
-        print("quality python exact      = ",quality1)
-        if alg_input=='Carfana':
-            print("quality python carfagna   = ",quality2)
-        print(f"S input {alg_input}\t= {S}")
-        print(f"S python exact\t= {np.array(s1)+1}")
-        if alg_input=='Carfana':
-            print(f"S python carfagna\t= {np.array(s2)+1}")
-        print(f"Time input {alg_input}    =  {Time}")
+        #-- compute jumps
+        execution_time.append(Time)
         compute_jumps(qiot,jumps,S,q_i)
-        print(f"Jumps input {alg_input}   =  {jumps}")
-        print(f"Quality input {alg_input}  =  {qiot}")
-        check(E,S,BINIT,BMIN,BMAX,c_i,q_i)
+        print(f"S\t=\t {S}")
+        print(f"Jumps\t=\t {jumps}")
+        print(f"Quality\t=\t {qiot}")
 
-        # do not use for now..
-        # if option == 1:
-        #     print("%2d" % (it),"\t",E)
-        # elif option == 2:
-        #     print("%2d" % (it),"\t",E)
-        #     (s,q) = ScheduleClassic(K,BINIT,BMIN,BMAX,E,Tasks)
-        #     print(" ",q,end=" - ")
-        #     print(f"S = {s}" if q!=0 else "")
-        # elif option == 3:
-        #     print("%2d" % (it),"\t",E)
-        #     (s,q) = ScheduleClassic(K,BINIT,BMIN,BMAX,E,Tasks)
-        #     print(" ",q,end=" - ")
-        #     print(f"S = {s}" if q!=0 else "")
-        #     (s,q) = schedule(K,BINIT,BMIN,BMAX,E,Tasks)
-        #     print(" ",q,end=" - ")
-        #     print(f"S = {s}" if q!=0 else "")
-        # elif option == 0:   
-        #     print("%2d " % (it),Energy,Time,end=" - \n")
-        #     (Sn,q) = schedule(K,BINIT,BMIN,BMAX,E,Tasks)
-        #     print("\t",E)
-        #     print("\tS Esatta   ",Sn,q)
-        #     print("\tS Arduino  ",S,Q,"%.1f%%" % (100*Q/q))
-        # elif option == 4:
-        #     print("%2d" % (it)," ",E)
-        #     (s,q) = ScheduleClassic(K,BINIT,BMIN,BMAX,E,Tasks)
-        #     print("    ",S,Q,check(K,S,BINIT,BMIN,BMAX,E,Tasks),q)
     print("------------------------------------------------------------------------------------------")
-    print("Quality Variation IoT/python (min,max,avg): %.3f, %.3f, %.3f" % (np.array(opt_ratio1).min(),np.array(opt_ratio1).max(),np.array(opt_ratio1).mean()))
     print("Quality IoT (min,max,avg): %.3f, %.3f, %.3f" % (np.array(qiot).min()/K,np.array(qiot).max()/K,np.array(qiot).mean()/K))
     print("Jumps IoT (min,max,avg): %.3f, %.3f, %.3f" % (np.array(jumps).min(),np.array(jumps).max(),np.array(jumps).mean()))
-    #print("Quality Carfagna (min,max,avg): %.3f, %.3f, %.3f" % (np.array(opt_ratio2).min(),np.array(opt_ratio2).max(),np.array(opt_ratio2).mean()))
-    print("Time (min,max,avg): %.3f, %.3f, %.3f" % (np.array(execution_time1).min(),np.array(execution_time1).max(),np.array(execution_time1).mean()))
+    print("Time (min,max,avg): %.3f, %.3f, %.3f" % (np.array(execution_time).min(),np.array(execution_time).max(),np.array(execution_time).mean()))

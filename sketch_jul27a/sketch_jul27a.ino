@@ -16,6 +16,9 @@
 
 #define F(a) (a)
 
+// parameter for the stabilization algorithm eps
+#define EPSILON           1.0
+
 // parameter for the precision of the classic algorithm 'with sampling'
 #define P   1
 #define BATTERY_SAMPLING  (int((BMAX-BMIN)*P)) // maximum = BMAX-BMIN, 1200, 800, 400, 100
@@ -27,7 +30,7 @@
 #define mah_to_level(b)  short((b-BMIN)/(mAh_per_lvl))
 
 /**************************************** TASK MODEL *******************************/
-#define N_TASKS   10
+#define N_TASKS   20
 #define ACTIVE_SYSTEM_CONSUMPTION   124
 #define IDLE_SYSTEM_CONSUMPTION      22 // idle is higher, we must check it
 
@@ -184,7 +187,8 @@ void PrintParameters(void) {
   Serial.print(F("BSAMPLING = ")); Serial.println(BATTERY_SAMPLING);
   Serial.print(F("EnergyForLevel = ")); Serial.println(mAh_per_lvl);
   Serial.print(F("MAX_QUALITY_LVL = ")); Serial.println(MAX_QUALITY_LVL);
-
+  Serial.print(F("EPSILON = ")); Serial.println(EPSILON);
+  
   Serial.print(F("\nc_i = ["));
   for (i=0; i<N_TASKS; i++) {
     sprintf(buf,"%3d%c",tasks[i].c_mAh,(i==N_TASKS-1?']':','));
@@ -232,13 +236,15 @@ void scheduleTasks(uint16_t E[K], uint16_t Q)
   //assert(q == Q);     /* COMMENT OUT */
 }
 
-int schedule(uint16_t E[])
+int schedulePenalty(uint16_t E[], float eps)
 {
-  int8_t   t,idmax;
+  int8_t   t,idmax,j;
   int16_t  b,Br;
   int16_t   k = K-1;       // start in the last slot
   uint16_t qmax = 0,q,l;
   uint16_t b_init_level = mah_to_level(B_INIT);
+  int16_t penalty;        /* ADDED FOR NGCC */
+ 
   #ifdef DEBUG
       if (idmax!=0) {
         printf("%d %d %d %d\n",b,level_to_mah(b),qmax,idmax);
@@ -280,10 +286,16 @@ int schedule(uint16_t E[])
             l = mah_to_level(Br);   
             assert(l <= BATTERY_SAMPLING);
             q = Q[(k + 1)%2][l];
-            if (q!=0 && (q + tasks[t].q_perc) > qmax) {
-              qmax = q + tasks[t].q_perc;
-              idmax = t+1;
+  
+/********************************* ADDED NGCC Init *****************************************/
+            if (q==0) continue;
+            j = S[k+1][l]-1;
+            penalty = int(EPSILON * (abs(tasks[t].q_perc - tasks[j].q_perc) - tasks[0].q_perc));
+            if (q + tasks[t].q_perc - penalty > qmax){
+                qmax = q + tasks[t].q_perc - penalty;
+                idmax = t+1;
             }
+/********************************* ADDED NGCC End ******************************************/
         }
       }
       Q[k%2][b] = qmax;
@@ -299,6 +311,9 @@ int schedule(uint16_t E[])
   else
     return Q[(K+1)%2][mah_to_level(B_INIT)];
 }
+
+
+
 
 void setup() {
   Serial.begin(115200);
@@ -337,9 +352,9 @@ void loop() {
 
     ClearQS();
 
-    // ***** Scheduling ******
+    // ***** Scheduling NGCC ******
     t1 = millis();
-    optQ = schedule(E_s_mAh);
+    optQ = schedulePenalty(E_s_mAh, EPSILON);
     t2 = millis();
    
     if (optQ != 0) {
@@ -355,7 +370,7 @@ void loop() {
     }
     Serial.print(F("Time = "));
     Serial.println(t2-t1);
-
+   
     counter++;
   } else {delay(1000);}
 }
