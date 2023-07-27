@@ -70,6 +70,15 @@ def check(E,S,Bstart,Bmin,Bmax,Cost,Quality):
         print("Not Energy Neutral:", battery)
 
 
+def compute_jumps(qiot,jumps,S,Q):
+    num=0
+    q=0
+    for i in range(len(S)-1):
+            num=num+abs(S[i]-S[i+1])
+            q=q+Q[S[i]-1]
+    jumps.append(num)
+    q=q+Q[S[len(S)-1]-1]
+    qiot.append(q)
 
 if __name__ == "__main__":
     K,N,BMIN,BMAX,BINIT,BSAMPLING,MAX_QUALITY_LVL = [0]*7
@@ -111,6 +120,8 @@ if __name__ == "__main__":
     opt_ratio1 = []
     opt_ratio2 = []
     execution_time1 = []
+    jumps = []
+    qiot = []
     #-- start analysis
     for data in iterations:
         it = data['it']
@@ -128,7 +139,7 @@ if __name__ == "__main__":
         opt_ratio1.append(100*Q/quality1)
         opt_ratio2.append(100*Q/quality2)
         execution_time1.append(Time)
- 
+
         print(f"quality input {alg_input}    =\t  {Q} \t {Q/quality1*100: .2f}")
         print("quality python exact      = ",quality1)
         if alg_input=='Carfana':
@@ -138,6 +149,9 @@ if __name__ == "__main__":
         if alg_input=='Carfana':
             print(f"S python carfagna\t= {np.array(s2)+1}")
         print(f"Time input {alg_input}    =  {Time}")
+        compute_jumps(qiot,jumps,S,q_i)
+        print(f"Jumps input {alg_input}   =  {jumps}")
+        print(f"Quality input {alg_input}  =  {qiot}")
         check(E,S,BINIT,BMIN,BMAX,c_i,q_i)
 
         # do not use for now..
@@ -166,6 +180,9 @@ if __name__ == "__main__":
         #     print("%2d" % (it)," ",E)
         #     (s,q) = ScheduleClassic(K,BINIT,BMIN,BMAX,E,Tasks)
         #     print("    ",S,Q,check(K,S,BINIT,BMIN,BMAX,E,Tasks),q)
-    print("Quality IoT (min,max,avg): %.3f, %.3f, %.3f" % (np.array(opt_ratio1).min(),np.array(opt_ratio1).max(),np.array(opt_ratio1).mean()))
-    print("Quality Carfagna (min,max,avg): %.3f, %.3f, %.3f" % (np.array(opt_ratio2).min(),np.array(opt_ratio2).max(),np.array(opt_ratio2).mean()))
+    print("------------------------------------------------------------------------------------------")
+    print("Quality Variation IoT/python (min,max,avg): %.3f, %.3f, %.3f" % (np.array(opt_ratio1).min(),np.array(opt_ratio1).max(),np.array(opt_ratio1).mean()))
+    print("Quality IoT (min,max,avg): %.3f, %.3f, %.3f" % (np.array(qiot).min()/K,np.array(qiot).max()/K,np.array(qiot).mean()/K))
+    print("Jumps IoT (min,max,avg): %.3f, %.3f, %.3f" % (np.array(jumps).min(),np.array(jumps).max(),np.array(jumps).mean()))
+    #print("Quality Carfagna (min,max,avg): %.3f, %.3f, %.3f" % (np.array(opt_ratio2).min(),np.array(opt_ratio2).max(),np.array(opt_ratio2).mean()))
     print("Time (min,max,avg): %.3f, %.3f, %.3f" % (np.array(execution_time1).min(),np.array(execution_time1).max(),np.array(execution_time1).mean()))
