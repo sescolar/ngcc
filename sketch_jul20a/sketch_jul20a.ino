@@ -3,7 +3,7 @@
 #define min(a,b)   ((a)<=(b)?(a):(b))
 #define max(a,b)   ((a)>=(b)?(a):(b))
 #define SEED       124
-#define VARIATION    1
+#define VARIATION    1                /* case OVERPRODUCTION */
 
 
 #define K 24
@@ -57,14 +57,20 @@ void GenerateTasks(void)
 
 /**************************************** PANEL MODEL *******************************/
 
-#define MAX_OVERPRODUCTION           20
+#define MAX_OVERPRODUCTION           40
 #define MAX_UNDERPRODUCTION          40
-#define SUNSET                       19
-#define SUNRISE                       8
+
+/* Sunset and Sunrise in Aug/October */
+#define SUNSET                       20 // 19 (oct)
+#define SUNRISE                       7 // 8 (oct)
 
 uint16_t E_h[24]     // Hourly Energy harvested 
 // October 
-= { 0,0,0,0,0,0,0,0,19,110,224,285,335,350,331,283,134,20,18,8,0,0,0,0 };
+//= { 0,0,0,0,0,0,0,0,19,110,224,285,335,350,331,283,134,20,18,8,0,0,0,0 };
+// August 
+= { 0,0,0,0,0,0,0,3,45,133,215,285,327,339,322,255,60,66,63,23,9,0,0,0 };
+
+
 
 uint16_t E_h_v[24]  = { 0 };    // Hourly Energy harvested varied
 uint16_t E_s_mAh[K] = { 0 };    // Final Energy harvested per slot in mAh
@@ -100,7 +106,7 @@ void update_panel()
 {
   uint8_t coin;
   uint8_t pos;
-  uint8_t variation;
+  int variation;
   uint8_t i;
   // Change the energy production of the panel randomly
   // First it changes the production for each hour. then
@@ -108,10 +114,12 @@ void update_panel()
   
   for (i=0; i<24; i++) {
     if (SUNRISE <= i && i <= SUNSET) {
-        if (!VARIATION) coin = 2; else coin = rand() % 3;
+        if (VARIATION == 0) coin = 2; 
+        if (VARIATION == 1) coin = 0; /* case OVERPRODUCTION */
+        if (VARIATION == 2) coin = 1; /* case UNDERPRODUCTION */
         switch (coin) {
         case 0 :
-            variation = 100 + (rand() % (MAX_OVERPRODUCTION + 1));
+            variation = 250 + (rand() % (MAX_OVERPRODUCTION + 1));
             break;
         case 1 :
             variation = 100 - (rand() % (MAX_UNDERPRODUCTION + 1));
