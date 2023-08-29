@@ -1,10 +1,14 @@
+/**********************************************************************************************************************
+ * This algorithm is the original one published in the IoT journal
+ * Last changed: 29/08/23
+ **********************************************************************************************************************/
 #include <assert.h>
 
 #define min(a,b)   ((a)<=(b)?(a):(b))
 #define max(a,b)   ((a)>=(b)?(a):(b))
 #define SEED       124
-#define VARIATION    1                /* case OVERPRODUCTION */
-
+//#define VARIATION    1                /* case OVERPRODUCTION */
+#define VARIATION    2                /* case UNDERPRODUCTION */
 
 #define K 24
 #define N_ITERATION   10
@@ -61,14 +65,14 @@ void GenerateTasks(void)
 #define MAX_UNDERPRODUCTION          40
 
 /* Sunset and Sunrise in Aug/October */
-#define SUNSET                       20 // 19 (oct)
-#define SUNRISE                       7 // 8 (oct)
+#define SUNSET                       19 // 20 (aug) // 19 (oct)
+#define SUNRISE                       8 //  7 (aug) // 8 (oct)
 
 uint16_t E_h[24]     // Hourly Energy harvested 
 // October 
-//= { 0,0,0,0,0,0,0,0,19,110,224,285,335,350,331,283,134,20,18,8,0,0,0,0 };
+= { 0,0,0,0,0,0,0,0,19,110,224,285,335,350,331,283,134,20,18,8,0,0,0,0 };
 // August 
-= { 0,0,0,0,0,0,0,3,45,133,215,285,327,339,322,255,60,66,63,23,9,0,0,0 };
+//= { 0,0,0,0,0,0,0,3,45,133,215,285,327,339,322,255,60,66,63,23,9,0,0,0 };
 
 
 
