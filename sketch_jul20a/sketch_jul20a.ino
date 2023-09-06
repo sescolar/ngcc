@@ -7,9 +7,9 @@
 #define min(a,b)   ((a)<=(b)?(a):(b))
 #define max(a,b)   ((a)>=(b)?(a):(b))
 #define SEED       124
-//#define VARIATION    1                /* case OVERPRODUCTION */
-#define VARIATION    2                /* case UNDERPRODUCTION */
-
+//#define VARIATION    1     
+#define VARIATION    2 /*underproduction*/
+           
 #define K 24
 #define N_ITERATION   10
 #define slotDurationPercentage  (24.0/K)
@@ -61,19 +61,14 @@ void GenerateTasks(void)
 
 /**************************************** PANEL MODEL *******************************/
 
-#define MAX_OVERPRODUCTION           40
+#define MAX_OVERPRODUCTION           20
 #define MAX_UNDERPRODUCTION          40
-
-/* Sunset and Sunrise in Aug/October */
-#define SUNSET                       19 // 20 (aug) // 19 (oct)
-#define SUNRISE                       8 //  7 (aug) // 8 (oct)
+#define SUNSET                       19 
+#define SUNRISE                       8 
 
 uint16_t E_h[24]     // Hourly Energy harvested 
 // October 
 = { 0,0,0,0,0,0,0,0,19,110,224,285,335,350,331,283,134,20,18,8,0,0,0,0 };
-// August 
-//= { 0,0,0,0,0,0,0,3,45,133,215,285,327,339,322,255,60,66,63,23,9,0,0,0 };
-
 
 
 uint16_t E_h_v[24]  = { 0 };    // Hourly Energy harvested varied
@@ -118,12 +113,10 @@ void update_panel()
   
   for (i=0; i<24; i++) {
     if (SUNRISE <= i && i <= SUNSET) {
-        if (VARIATION == 0) coin = 2; 
-        if (VARIATION == 1) coin = 0; /* case OVERPRODUCTION */
-        if (VARIATION == 2) coin = 1; /* case UNDERPRODUCTION */
+        if (!VARIATION) coin = 2; else coin = rand() % 3;
         switch (coin) {
         case 0 :
-            variation = 250 + (rand() % (MAX_OVERPRODUCTION + 1));
+            variation = 100 + (rand() % (MAX_OVERPRODUCTION + 1));
             break;
         case 1 :
             variation = 100 - (rand() % (MAX_UNDERPRODUCTION + 1));
@@ -132,7 +125,11 @@ void update_panel()
             variation = 100;
             break;
         }
-        E_h_v[i] = min((int)(E_h[i] * (float)variation / 100),520);   // 520 is the maximum from the panel
+        if (VARIATION == 2) {/*underproduction*/
+          E_h_v[i] = min((int)(E_h[i]*0.8  * (float)variation / 100),520);   // 520 is the maximum from the panel
+        }else{
+          E_h_v[i] = min((int)(E_h[i] * (float)variation / 100),520);   // 520 is the maximum from the panel
+        }
     }
     // if K>24 we must spread the production between K/24 slots
     for (int8_t j=0; (K >= 24) && j<(K/24); j++)
