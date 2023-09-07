@@ -7,8 +7,8 @@
 #define min(a,b)   ((a)<=(b)?(a):(b))
 #define max(a,b)   ((a)>=(b)?(a):(b))
 #define SEED       124
-//#define VARIATION    1     
-#define VARIATION    2 /*underproduction*/
+#define VARIATION    1     
+
            
 #define K 24
 #define N_ITERATION   10
@@ -68,8 +68,8 @@ void GenerateTasks(void)
 
 uint16_t E_h[24]     // Hourly Energy harvested 
 // October 
-= { 0,0,0,0,0,0,0,0,19,110,224,285,335,350,331,283,134,20,18,8,0,0,0,0 };
-
+//= { 0,0,0,0,0,0,0,0,19,110,224,285,335,350,331,283,134,20,18,8,0,0,0,0 };
+={ 0,0,0,0,0,0,0,0,15,88,179,228,268,280,264,226,107,16,14,6,0,0,0,0};
 
 uint16_t E_h_v[24]  = { 0 };    // Hourly Energy harvested varied
 uint16_t E_s_mAh[K] = { 0 };    // Final Energy harvested per slot in mAh
@@ -113,7 +113,7 @@ void update_panel()
   
   for (i=0; i<24; i++) {
     if (SUNRISE <= i && i <= SUNSET) {
-        if (!VARIATION) coin = 2; else coin = rand() % 3;
+        if (!VARIATION) coin = 2; else coin = rand() % 3; 
         switch (coin) {
         case 0 :
             variation = 100 + (rand() % (MAX_OVERPRODUCTION + 1));
@@ -125,11 +125,7 @@ void update_panel()
             variation = 100;
             break;
         }
-        if (VARIATION == 2) {/*underproduction*/
-          E_h_v[i] = min((int)(E_h[i]*0.8  * (float)variation / 100),520);   // 520 is the maximum from the panel
-        }else{
-          E_h_v[i] = min((int)(E_h[i] * (float)variation / 100),520);   // 520 is the maximum from the panel
-        }
+        E_h_v[i] = min((int)(E_h[i] * (float)variation / 100),520);   // 520 is the maximum from the panel
     }
     // if K>24 we must spread the production between K/24 slots
     for (int8_t j=0; (K >= 24) && j<(K/24); j++)
