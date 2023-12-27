@@ -14,9 +14,9 @@
 #define N_ITERATION   10
 #define slotDurationPercentage  (24.0/K)
 
-#define BMAX              2000
+#define BMAX              1000  // 2000
 #define BMIN              160
-#define B_INIT            1800
+#define B_INIT            800   // 1800
 
 #define F(a) (a)
 
@@ -69,6 +69,7 @@ void GenerateTasks(void)
 uint16_t E_h[24]     // Hourly Energy harvested 
 // October 
 //= { 0,0,0,0,0,0,0,0,19,110,224,285,335,350,331,283,134,20,18,8,0,0,0,0 };
+//under
 ={ 0,0,0,0,0,0,0,0,15,88,179,228,268,280,264,226,107,16,14,6,0,0,0,0};
 
 uint16_t E_h_v[24]  = { 0 };    // Hourly Energy harvested varied
